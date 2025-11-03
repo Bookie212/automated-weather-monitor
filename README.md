@@ -18,45 +18,51 @@ It logs weather information — including temperature, status codes, and API res
 
 ## 🧩 Project Structure
 
-📂 Automated Weather Monitor/
-├── weather_monitor.py # Main Python script
-├── .env # Contains your API key (excluded from Git)
-├── .gitignore # Ensures .env and .db are not pushed
-├── weather-file.db # SQLite database (auto-created)
-└── README.md # Project documentation
+	📂 Automated Weather Monitor/
+	├── weather_monitor.py # Main Python script
+	├── .env # Contains your API key (excluded from Git)
+	├── .gitignore # Ensures .env and .db are not pushed
+	├── weather-file.db # SQLite database (auto-created)
+	└── README.md # Project documentation
 
 ---
 
 ## ⚙️ Setup Instructions
 
 ### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/yourusername/automated-weather-monitor.git
-cd automated weather monitor
+
+	git clone https://github.com/yourusername/automated-weather-monitor.git
+	cd automated weather monitor
 
 ### 2️⃣ Install Required Packages
-  pip install requests python-dotenv
+	pip install requests python-dotenv
 
 ### 3️⃣ Create a .env File
-  openweather_apikey=YOUR_API_KEY_HERE
+	openweather_apikey=YOUR_API_KEY_HERE
 
 ## 🗄 Database
 
 The script automatically creates an SQLite database named weather-file.db with the following schema:
 
-Column	      Type	        Description
-id	          INTEGER	      Auto-incrementing primary key
-timestamp	    TEXT	        When the request was made
-status_code	  INTEGER	      HTTP response code from API
-city	        TEXT	        City name (e.g., Abuja)
-temperature	  REAL	        Temperature in Celsius
-description	  TEXT	        Weather condition description
+	Column	      Type	        Description
+	
+	id	          INTEGER	      Auto-incrementing primary key
+	
+	timestamp	    TEXT	        When the request was made
+	
+	status_code	  INTEGER	      HTTP response code from API
+	
+	city	        TEXT	        City name (e.g., Abuja)
+	
+	temperature	  REAL	        Temperature in Celsius
+	
+	description	  TEXT	        Weather condition description
 
 ## 🚀 Running the Script
 
 Run the monitor:
 
-  python weather_monitor.py
+	python weather_monitor.py
 
 
 By default, the script checks the API every 30 seconds.
@@ -70,19 +76,19 @@ You can explore the stored weather logs using the SQLite command-line tool or a 
 
 Example:
 
-sqlite3 weather-file.db
-SELECT * FROM weather;
+	sqlite3 weather-file.db
+	SELECT * FROM weather;
 
 ## 🧰 .gitignore Setup
 
 The .gitignore file ensures sensitive and unnecessary files are not pushed to GitHub:
 
-  .env
-  *.db
-  __pycache__/
-  venv/
-  *.pyc
-  .vscode/
+	.env
+	*.db
+	__pycache__/
+	venv/
+	*.pyc
+	.vscode/
 
 ## 🧯 Error Handling
 
