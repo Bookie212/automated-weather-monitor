@@ -18,6 +18,7 @@ env/
 *.log
 
 # --- IDE / Editor files ---
+*.code-workscape
 .vscode/
 .idea/
 
