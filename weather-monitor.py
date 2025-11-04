@@ -2,8 +2,14 @@ import requests
 import sqlite3
 import os
 import time
+import argparse
 from dotenv import load_dotenv
 from datetime import datetime
+
+# parser and argument
+parser = argparse.ArgumentParser(description="Weather monitor script")
+parser.add_argument("--city", type=str, default="Abuja", help="city name")
+parser.add_argument("--interval", type=int, default=60, help="check interval in seconds")
 
 # Create the SQLite database and weather table if it doesn't already exist.
 def database_setup():
@@ -17,12 +23,10 @@ def database_setup():
     conn.close()
 
 # Fetch current weather data from OpenWeather API
-def check_api_status():
+def check_api_status(city):
     # the env file and get the api key
     load_dotenv()
     api_key = os.getenv('openweather_apikey')
-
-    city = 'Abuja'
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
@@ -68,14 +72,14 @@ def log_data(log_record):
     conn.close()
 
 # Orchestrates all components and runs API checks every <interval_seconds> seconds
-def monitor_loop(interval_seconds=30):
+def monitor_loop(city, interval_seconds=30):
     database_setup()
 
     print(f"Monitoring started. Checking API every {interval_seconds} seconds.")
 
     while True:
 
-        log_record = check_api_status()
+        log_record = check_api_status(city)
         
         # Log the entire record (success or failure) to the database
         log_data(log_record)
@@ -86,7 +90,8 @@ def monitor_loop(interval_seconds=30):
 
 if __name__ == "__main__":
     try:
-        monitor_loop()
+        args = parser.parse_args()
+        monitor_loop(args.city, args.interval)
     except KeyboardInterrupt:
         print("\nAPI Monitoring stopped by user.")
     except Exception as e:
