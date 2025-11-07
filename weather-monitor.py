@@ -3,6 +3,8 @@ import sqlite3
 import os
 import time
 import argparse
+import logging
+from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -10,6 +12,32 @@ from datetime import datetime
 parser = argparse.ArgumentParser(description="Weather monitor script")
 parser.add_argument("--city", type=str, default="Abuja", help="city name")
 parser.add_argument("--interval", type=int, default=60, help="check interval in seconds")
+
+# Logging setup
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+file_handler = RotatingFileHandler(
+    'weather.log',
+    maxBytes=50000,
+    backupCount=20
+)
+
+file_formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+file_handler.setFormatter(file_formatter)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_formatter = logging.Formatter('%(message)s')
+console_handler.setFormatter(console_formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
 
 # Create the SQLite database and weather table if it doesn't already exist.
 def database_setup():
@@ -28,6 +56,10 @@ def check_api_status(city):
     load_dotenv()
     api_key = os.getenv('openweather_apikey')
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    if not api_key:
+        logger.error("Missing OpenWeather API key in .env file.")
+        return
 
     try:
         response = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric")
@@ -75,7 +107,7 @@ def log_data(log_record):
 def monitor_loop(city, interval_seconds=30):
     database_setup()
 
-    print(f"Monitoring started. Checking API every {interval_seconds} seconds.")
+    logger.info(f"Monitoring started. Checking API every {interval_seconds} seconds.")
 
     while True:
 
@@ -86,13 +118,13 @@ def monitor_loop(city, interval_seconds=30):
         
         # Wait for the next check
         time.sleep(interval_seconds)
-
+    
 
 if __name__ == "__main__":
     try:
         args = parser.parse_args()
         monitor_loop(args.city, args.interval)
     except KeyboardInterrupt:
-        print("\nAPI Monitoring stopped by user.")
-    except Exception as e:
-        print(f"\nAn unexpected fatal error occurred: {e}")
+        logger.info("\nAPI Monitoring stopped by user.")
+    except Exception:
+        logger.exception(f"\nAn unexpected fatal error occurred.")
